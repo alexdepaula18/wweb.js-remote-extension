@@ -1,0 +1,46 @@
+{
+  "name": "wweb.js-remote-extension",
+  "description": "A package of extensions for enhanced usage of the RemoteAuth and remote Storage features in the whatsapp-web.js library.",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rimraf ./build && tsc",
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "keywords": [
+    "whatsapp-web.js",
+    "RemoteAuth",
+    "remote Storage",
+    "extension"
+  ],
+  "packageManager": "yarn@4.0.2",
+  "repository": "https://github.com/alexdepaula18/wweb.js-remote-extension.git",
+  "homepage": "https://github.com/alexdepaula18/wweb.js-remote-extension",
+  "bugs": {
+    "url": "https://github.com/alexdepaula18/wweb.js-remote-extension/issues"
+  },
+  "author": "Alex de Paula <alexdepaula@outlook.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-typescript": "^7.23.3",
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.2",
+    "aws-sdk-client-mock": "^3.0.1",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.490.0",
+    "@aws-sdk/lib-storage": "^3.490.0",
+    "aws-sdk": "^2.1536.0",
+    "fs-extra": "^11.2.0",
+    "path": "^0.12.7",
+    "whatsapp-web.js": "^1.23.0"
+  }
+}
