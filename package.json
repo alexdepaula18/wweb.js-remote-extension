@@ -19,10 +19,10 @@
     "remote Storage",
     "extension"
   ],
-  "repository": "https://github.com/alexdepaula18/wweb.js-remote-extension.git",
-  "homepage": "https://github.com/alexdepaula18/wweb.js-remote-extension",
+  "repository": "https://github.com/alexdepaula18/wwebjs-store.git",
+  "homepage": "https://github.com/alexdepaula18/wwebjs-store",
   "bugs": {
-    "url": "https://github.com/alexdepaula18/wweb.js-remote-extension/issues"
+    "url": "https://github.com/alexdepaula18/wwebjs-store/issues"
   },
   "author": "Alex de Paula <alexdepaula@outlook.com>",
   "license": "Apache-2.0",

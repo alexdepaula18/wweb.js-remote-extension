@@ -1,29 +1,29 @@
-[![npm](https://img.shields.io/npm/v/wweb.js-remote-extension.svg)](https://www.npmjs.com/package/wweb.js-remote-extension) [![codecov](https://codecov.io/gh/alexdepaula18/wweb.js-remote-extension/graph/badge.svg?token=GUFBA3EVKS)](https://codecov.io/gh/alexdepaula18/wweb.js-remote-extension)
+[![npm](https://img.shields.io/npm/v/wwebjs-store.svg)](https://www.npmjs.com/package/wwebjs-store) [![codecov](https://codecov.io/gh/alexdepaula18/wwebjs-store/graph/badge.svg?token=GUFBA3EVKS)](https://codecov.io/gh/alexdepaula18/wwebjs-store)
 
-# wweb.js-remote-extension
+# wwebjs-store
 
 ## Quick Links
 
 * [Whatsapp-web JS](https://wwebjs.dev/guide/authentication.html)
 * [GitHub](https://github.com/arbisyarifudin/wwebjs-aws-s3)
-* [npm](https://www.npmjs.com/package/wweb.js-remote-extension)
+* [npm](https://www.npmjs.com/package/wwebjs-store)
 
 # Instalation
 
 Using NPM
 ```shell
-npm install wweb.js-remote-extension
+npm install wwebjs-store
 ```
 
 Using YARN
 ```shell
-yarn add wweb.js-remote-extension
+yarn add wwebjs-store
 ```
 
 # How to use 
 
 ```typescript
-import { Provider, build } from "wweb.js-remote-extension";
+import { Provider, build } from "wwebjs-store";
 
 const awsS3Options = {
     accessKeyId: "JDHTTASGGG6T...", // required - AWS Access Key
