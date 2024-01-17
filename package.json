@@ -47,12 +47,5 @@
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "whatsapp-web.js": "^1.23.0"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "cobertura"
-    ]
   }
 }
