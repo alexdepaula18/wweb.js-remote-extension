@@ -12,29 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "21.x"
-
-      - name: Enable Corepack ⚙️
-        shell: bash
-        run: corepack enable
-
       - name: Setup Node & Cache
         uses: actions/setup-node@v4
         with:
           node-version: "21.x"
-          cache: yarn
+          cache: npm
 
       - name: Run install
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Run build 🔧
-        run: yarn build
+        run: npm run build
 
       - name: Run tests 🔧
-        run: yarn test
+        run: npm run test
 
       - name: Run tests coverage 🔧
-        run: yarn coverage
+        run: npm run coverage
