@@ -17,4 +17,16 @@ const runAsync = () => {
       backupSyncIntervalMs: 300000,
     }),
   });
+
+  client.on("qr", (qr) => {
+    console.log(`qr`, qr);
+  });
+
+  client.on("ready", () => {
+    console.log(`ready`);
+  });
+
+  client.on("remote_session_saved", () => {
+    console.log(`remote_session_saved`);
+  });
 };

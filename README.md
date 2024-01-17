@@ -2,6 +2,12 @@
 
 # wweb.js-remote-extension
 
+## Quick Links
+
+* [Whatsapp-web JS](https://wwebjs.dev/guide/authentication.html)
+* [GitHub](https://github.com/arbisyarifudin/wwebjs-aws-s3)
+* [npm](https://www.npmjs.com/package/wweb.js-remote-extension)
+
 # Instalation
 
 Using NPM

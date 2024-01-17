@@ -1,5 +1,5 @@
 {
-  "name": "wweb.js-remote-extension",
+  "name": "wwebjs-store",
   "description": "A package of extensions for enhanced usage of the RemoteAuth and remote Storage features in the whatsapp-web.js library.",
   "version": "1.0.0",
   "main": "./dist/index.js",
@@ -19,7 +19,6 @@
     "remote Storage",
     "extension"
   ],
-  "packageManager": "yarn@4.0.2",
   "repository": "https://github.com/alexdepaula18/wweb.js-remote-extension.git",
   "homepage": "https://github.com/alexdepaula18/wweb.js-remote-extension",
   "bugs": {
