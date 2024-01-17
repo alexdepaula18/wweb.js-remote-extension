@@ -84,7 +84,7 @@ export class AwsS3Store implements Store {
       params: input,
     });
 
-    parallelUpload.on("httpUploadProgress", (progress) => {
+    parallelUpload.on("httpUploadProgress", (progress: any) => {
       if (this.saveProgressUploadCallback)
         this.saveProgressUploadCallback(progress);
     });
@@ -111,7 +111,7 @@ export class AwsS3Store implements Store {
     const command = new GetObjectCommand(input);
     const output = await this.s3Client.send(command);
 
-    const data = await output.Body?.transformToString();
+    const data = await output.Body?.transformToByteArray();
 
     if (data) fs.writeFileSync(localFilePath, data);
     else throw new Error("Download failed!");
