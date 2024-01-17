@@ -12,20 +12,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node & Cache
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "21.x"
-          cache: npm
 
       - name: Run install
         run: npm ci
 
-      - name: Run build 🔧
+      - name: Run build
         run: npm run build
 
-      - name: Run tests 🔧
+      - name: Run tests
         run: npm run test
 
-      - name: Run tests coverage 🔧
+      - name: Run tests coverage
         run: npm run coverage
