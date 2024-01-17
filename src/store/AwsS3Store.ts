@@ -7,10 +7,16 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  NoSuchKey,
   NotFound,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
+
+export interface AwsS3StoreOptions {
+  s3Client: S3Client;
+  bucketName?: string;
+}
 
 /**
  * AWS S3 remote storage, save user session in AWS S3 Bucket
@@ -27,7 +33,7 @@ export class AwsS3Store implements Store {
    * @param {string} options.s3Client - AWS S3Client instance
    * @param {string} options.bucketName - AWS bucketName, default value is "whatsapp-web-session-files"
    */
-  constructor(options: { s3Client: S3Client; bucketName?: string }) {
+  constructor(options: AwsS3StoreOptions) {
     if (!options)
       throw new Error("A valid AWS instance is required for Options.");
 
@@ -132,7 +138,7 @@ export class AwsS3Store implements Store {
       await this.s3Client.send(command);
       return true;
     } catch (error) {
-      if (typeof error == typeof NotFound) {
+      if (error instanceof NotFound || error instanceof NoSuchKey) {
         return false;
       } else {
         throw error;
@@ -151,7 +157,7 @@ export class AwsS3Store implements Store {
       await this.s3Client.send(command);
       return true;
     } catch (error) {
-      if (typeof error == typeof NotFound) {
+      if (error instanceof NotFound || error instanceof NoSuchKey) {
         return false;
       } else {
         throw error;
