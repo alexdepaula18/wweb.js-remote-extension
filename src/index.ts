@@ -1,5 +1,5 @@
 import { Store } from "whatsapp-web.js";
-import { AwsS3Store } from "./AwsS3Store";
+import { AwsS3Store } from "./store/AwsS3Store";
 import { Credentials } from "aws-sdk";
 import { S3Client } from "@aws-sdk/client-s3";
 
@@ -16,7 +16,10 @@ export interface AwsS3Options extends Options {
   bucketName?: string;
 }
 
-export const build = (provider: Provider, options: object): Store => {
+export const build = (
+  provider: Provider,
+  options: Options | AwsS3Options
+): Store => {
   switch (provider) {
     case Provider.AwsS3: {
       if (!options)

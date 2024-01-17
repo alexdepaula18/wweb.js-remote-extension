@@ -1,5 +1,5 @@
 import { Client, RemoteAuth } from "whatsapp-web.js";
-import { Provider, build } from "../src/store/StoreFactory";
+import { Provider, build } from "../src";
 
 const runAsync = () => {
   const awsS3Options = {

@@ -18,5 +18,9 @@ yarn-error.log*
 
 .env
 *.zip
-tools/
-tests/
+tools/*
+src/*
+tests/*
+example/*
+coverage/*
+

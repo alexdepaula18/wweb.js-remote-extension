@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/wweb.js-remote-extension.svg)](https://www.npmjs.com/package/wweb.js-remote-extension) [![codecov](https://codecov.io/gh/alexdepaula18/wweb.js-remote-extension/graph/badge.svg?token=GUFBA3EVKS)](https://codecov.io/gh/alexdepaula18/wweb.js-remote-extension)
+
 # wweb.js-remote-extension
 
 # Instalation
