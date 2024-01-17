@@ -25,3 +25,5 @@ jobs:
         run: npm publish --verbose --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_SECRET_KEY }}
+          NPM_TOKEN: ${{ secrets.NPM_SECRET_KEY }}
+          GITHUB_TOKEN:

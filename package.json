@@ -15,8 +15,8 @@
   "keywords": [
     "whatsapp-web.js",
     "RemoteAuth",
-    "remote Storage",
-    "extension"
+    "Remote Storage",
+    "AWS S3"
   ],
   "repository": "https://github.com/alexdepaula18/wwebjs-store.git",
   "homepage": "https://github.com/alexdepaula18/wwebjs-store",

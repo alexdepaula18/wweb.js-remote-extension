@@ -5,7 +5,7 @@
 ## Quick Links
 
 * [Whatsapp-web JS](https://wwebjs.dev/guide/authentication.html)
-* [GitHub](https://github.com/arbisyarifudin/wwebjs-aws-s3)
+* [GitHub](https://github.com/alexdepaula18/wwebjs-store)
 * [npm](https://www.npmjs.com/package/wwebjs-store)
 
 # Instalation
