@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/wwebjs-store.svg)](https://www.npmjs.com/package/wwebjs-store) [![codecov](https://codecov.io/gh/alexdepaula18/wwebjs-store/graph/badge.svg?token=GUFBA3EVKS)](https://codecov.io/gh/alexdepaula18/wwebjs-store)
+[![npm](https://img.shields.io/npm/v/wwebjs-store.svg)](https://www.npmjs.com/package/wwebjs-store) [![codecov](https://codecov.io/gh/alexdepaula18/wwebjs-store/graph/badge.svg?token=GUFBA3EVKS)](https://codecov.io/gh/alexdepaula18/wwebjs-store) ![Build And Tests](https://github.com/alexdepaula18/wwebjs-store/actions/workflows/build.yml/badge.svg)
 
 # wwebjs-store
 
