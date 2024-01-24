@@ -6,6 +6,7 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
@@ -26,7 +27,7 @@ describe("AwsS3Store creation", () => {
 
 describe("AwsS3Store functions", () => {
   describe("Success executions", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       s3ClientMock.reset();
 
       s3ClientMock.on(HeadBucketCommand).resolves({});
@@ -59,7 +60,7 @@ describe("AwsS3Store functions", () => {
       const store = new AwsS3Store({ s3Client: s3Client });
 
       // create Stream from file
-      const stream = createReadStream("./tests/sample_file.zip");
+      const stream = createReadStream("./sample_file.zip");
 
       // wrap the Stream with SDK mixin
       const sdkStream = sdkStreamMixin(stream);
@@ -73,6 +74,28 @@ describe("AwsS3Store functions", () => {
 
       expect(s3ClientMock).toHaveReceivedCommand(GetObjectCommand);
       expect(s3ClientMock).toHaveReceivedCommandTimes(GetObjectCommand, 1);
+    });
+
+    it("save with success", async () => {
+      s3ClientMock.on(HeadObjectCommand).resolves({});
+      s3ClientMock.on(DeleteObjectCommand).resolves({});
+
+      const store = new AwsS3Store({ s3Client: s3Client });
+
+      s3ClientMock.on(PutObjectCommand).resolves({});
+
+      await store.save({
+        session: "sample_file",
+      });
+
+      expect(s3ClientMock).toHaveReceivedCommand(HeadObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(HeadObjectCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(DeleteObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(PutObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
     });
   });
 });

@@ -7,7 +7,9 @@ export enum Provider {
   AwsS3,
 }
 
-interface Options {}
+interface Options {
+  enableDebugLog?: boolean;
+}
 
 export interface AwsS3Options extends Options {
   accessKeyId: string;

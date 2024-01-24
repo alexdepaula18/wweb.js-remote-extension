@@ -9,13 +9,15 @@ import {
   HeadObjectCommand,
   NoSuchKey,
   NotFound,
+  PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
+import { Readable } from "stream";
 
 export interface AwsS3StoreOptions {
   s3Client: S3Client;
   bucketName?: string;
+  enableDebugLog?: boolean;
 }
 
 /**
@@ -24,6 +26,7 @@ export interface AwsS3StoreOptions {
 export class AwsS3Store implements Store {
   private readonly s3Client: S3Client;
   private readonly bucketName: string;
+  private readonly enableDebugLog: boolean;
 
   public saveProgressUploadCallback: ((progress: any) => void) | undefined;
 
@@ -32,6 +35,7 @@ export class AwsS3Store implements Store {
    * @param {object} options - options
    * @param {string} options.s3Client - AWS S3Client instance
    * @param {string} options.bucketName - AWS bucketName, default value is "whatsapp-web-session-files"
+   * @param {string} options.enableDebugLog - enableDebugLog, default value is false
    */
   constructor(options: AwsS3StoreOptions) {
     if (!options)
@@ -42,6 +46,7 @@ export class AwsS3Store implements Store {
 
     this.s3Client = options.s3Client;
     this.bucketName = options.bucketName || "whatsapp-web-session-files";
+    this.enableDebugLog = options.enableDebugLog || false;
   }
 
   /**
@@ -67,9 +72,11 @@ export class AwsS3Store implements Store {
   async save(options: { session: string }): Promise<Promise<any> | any> {
     const localFilePath = path.join(`./`, `${options.session}.zip`);
     const remoteFileName = `${options.session}.zip`;
-    const fileContent = fs.readFileSync(localFilePath);
 
     await this.createBucketWithNotExists(this.bucketName);
+    await this.deleteOldFiles(options);
+
+    const fileContent = fs.readFileSync(localFilePath);
 
     const input = {
       Bucket: this.bucketName,
@@ -77,19 +84,8 @@ export class AwsS3Store implements Store {
       Body: fileContent,
     };
 
-    const parallelUpload = new Upload({
-      client: this.s3Client,
-      queueSize: 5,
-      leavePartsOnError: false,
-      params: input,
-    });
-
-    parallelUpload.on("httpUploadProgress", (progress: any) => {
-      if (this.saveProgressUploadCallback)
-        this.saveProgressUploadCallback(progress);
-    });
-
-    await parallelUpload.done();
+    const command = new PutObjectCommand(input);
+    await this.s3Client.send(command);
   }
 
   /**
@@ -111,10 +107,13 @@ export class AwsS3Store implements Store {
     const command = new GetObjectCommand(input);
     const output = await this.s3Client.send(command);
 
-    const data = await output.Body?.transformToByteArray();
+    const fileStream = fs.createWriteStream(localFilePath);
 
-    if (data) fs.writeFileSync(localFilePath, data);
-    else throw new Error("Download failed!");
+    const readableStream: Readable = output.Body as Readable;
+
+    await new Promise((resolve, reject) => {
+      readableStream.pipe(fileStream).on("error", reject).on("finish", resolve);
+    });
   }
 
   /**
@@ -175,6 +174,17 @@ export class AwsS3Store implements Store {
 
       const command = new CreateBucketCommand(input);
       await this.s3Client.send(command);
+    }
+  }
+
+  private async deleteOldFiles(options: { session: string }): Promise<void> {
+    const exists = await this.sessionExists(options);
+    if (exists) await this.delete(options);
+  }
+
+  private consoleLog(message: string, params: object[]) {
+    if (this.enableDebugLog) {
+      console.debug(message, params);
     }
   }
 }
