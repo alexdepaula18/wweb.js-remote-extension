@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import { Store } from "whatsapp-web.js";
 import {
+  CopyObjectCommand,
   CreateBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
@@ -56,13 +57,10 @@ export class AwsS3Store implements Store {
   async delete(options: { session: string }): Promise<Promise<any> | any> {
     const remoteFileName = `${options.session}.zip`;
 
-    const input = {
-      Bucket: this.bucketName,
-      Key: remoteFileName,
-    };
-
-    const command = new DeleteObjectCommand(input);
-    await this.s3Client.send(command);
+    await this.deleteRemoteFile({
+      bucket: this.bucketName,
+      filename: remoteFileName,
+    });
   }
 
   /**
@@ -71,21 +69,44 @@ export class AwsS3Store implements Store {
    */
   async save(options: { session: string }): Promise<Promise<any> | any> {
     const localFilePath = path.join(`./`, `${options.session}.zip`);
-    const remoteFileName = `${options.session}.zip`;
 
     await this.createBucketWithNotExists(this.bucketName);
-    await this.deleteOldFiles(options);
+
+    const actualRemoteFileName = `${options.session}.zip`;
+
+    const actualExists = await this.existsRemoteFile({
+      bucket: this.bucketName,
+      filename: actualRemoteFileName,
+    });
 
     const fileContent = fs.readFileSync(localFilePath);
 
-    const input = {
-      Bucket: this.bucketName,
-      Key: remoteFileName,
-      Body: fileContent,
-    };
+    if (actualExists == true) {
+      const newRemoteFileName = `${options.session}_new.zip`;
 
-    const command = new PutObjectCommand(input);
-    await this.s3Client.send(command);
+      await this.createRemoteFile({
+        bucket: this.bucketName,
+        filename: newRemoteFileName,
+        fileContent: fileContent,
+      });
+
+      await this.deleteRemoteFile({
+        bucket: this.bucketName,
+        filename: actualRemoteFileName,
+      });
+
+      await this.copyRemoteFile({
+        bucket: this.bucketName,
+        originFilename: newRemoteFileName,
+        destinationFilename: actualRemoteFileName,
+      });
+    } else {
+      await this.createRemoteFile({
+        bucket: this.bucketName,
+        filename: actualRemoteFileName,
+        fileContent: fileContent,
+      });
+    }
   }
 
   /**
@@ -126,23 +147,10 @@ export class AwsS3Store implements Store {
 
     const remoteFileName = `${options.session}.zip`;
 
-    const input = {
-      Bucket: this.bucketName,
-      Key: remoteFileName,
-    };
-
-    const command = new HeadObjectCommand(input);
-
-    try {
-      await this.s3Client.send(command);
-      return true;
-    } catch (error) {
-      if (error instanceof NotFound || error instanceof NoSuchKey) {
-        return false;
-      } else {
-        throw error;
-      }
-    }
+    return await this.existsRemoteFile({
+      bucket: this.bucketName,
+      filename: remoteFileName,
+    });
   }
 
   private async bucketExists(bucketName: string): Promise<boolean> {
@@ -177,9 +185,70 @@ export class AwsS3Store implements Store {
     }
   }
 
-  private async deleteOldFiles(options: { session: string }): Promise<void> {
-    const exists = await this.sessionExists(options);
-    if (exists) await this.delete(options);
+  private async createRemoteFile(options: {
+    bucket: string;
+    filename: string;
+    fileContent: Buffer;
+  }): Promise<void> {
+    const input = {
+      Bucket: options.bucket,
+      Key: options.filename,
+      Body: options.fileContent,
+    };
+
+    const command = new PutObjectCommand(input);
+    await this.s3Client.send(command);
+  }
+
+  private async deleteRemoteFile(options: {
+    bucket: string;
+    filename: string;
+  }): Promise<void> {
+    const input = {
+      Bucket: options.bucket,
+      Key: options.filename,
+    };
+
+    const command = new DeleteObjectCommand(input);
+    await this.s3Client.send(command);
+  }
+
+  private async existsRemoteFile(options: {
+    bucket: string;
+    filename: string;
+  }): Promise<boolean> {
+    const input = {
+      Bucket: options.bucket,
+      Key: options.filename,
+    };
+
+    const command = new HeadObjectCommand(input);
+
+    try {
+      await this.s3Client.send(command);
+      return true;
+    } catch (error) {
+      if (error instanceof NotFound || error instanceof NoSuchKey) {
+        return false;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  private async copyRemoteFile(options: {
+    bucket: string;
+    originFilename: string;
+    destinationFilename: string;
+  }): Promise<void> {
+    const input = {
+      Bucket: options.bucket,
+      CopySource: options.originFilename,
+      Key: options.destinationFilename,
+    };
+
+    const command = new CopyObjectCommand(input);
+    await this.s3Client.send(command);
   }
 
   private consoleLog(message: string, params: object[]) {

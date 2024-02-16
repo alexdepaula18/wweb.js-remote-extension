@@ -1,11 +1,13 @@
 import { describe, test } from "@jest/globals";
 import { AwsS3Store } from "../../src/store/AwsS3Store";
 import {
+  CopyObjectCommand,
   CreateBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  NotFound,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -76,9 +78,10 @@ describe("AwsS3Store functions", () => {
       expect(s3ClientMock).toHaveReceivedCommandTimes(GetObjectCommand, 1);
     });
 
-    it("save with success", async () => {
+    it("save existing remote file with success", async () => {
       s3ClientMock.on(HeadObjectCommand).resolves({});
       s3ClientMock.on(DeleteObjectCommand).resolves({});
+      s3ClientMock.on(CopyObjectCommand).resolves({});
 
       const store = new AwsS3Store({ s3Client: s3Client });
 
@@ -93,6 +96,33 @@ describe("AwsS3Store functions", () => {
 
       expect(s3ClientMock).toHaveReceivedCommand(DeleteObjectCommand);
       expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(CopyObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(CopyObjectCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(PutObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
+    });
+
+    it("save no existing remote file with success", async () => {
+      s3ClientMock.on(HeadObjectCommand).callsFake((input) => {
+        throw new NotFound({ $metadata: {}, message: "" });
+      });
+
+      const store = new AwsS3Store({ s3Client: s3Client });
+
+      s3ClientMock.on(PutObjectCommand).resolves({});
+
+      await store.save({
+        session: "sample_file",
+      });
+
+      expect(s3ClientMock).toHaveReceivedCommand(HeadObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(HeadObjectCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 0);
+
+      expect(s3ClientMock).toHaveReceivedCommandTimes(CopyObjectCommand, 0);
 
       expect(s3ClientMock).toHaveReceivedCommand(PutObjectCommand);
       expect(s3ClientMock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
