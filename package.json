@@ -1,7 +1,7 @@
 {
   "name": "wwebjs-store",
   "description": "A package of extensions for enhanced usage of the RemoteAuth and remote Storage features in the whatsapp-web.js library.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
