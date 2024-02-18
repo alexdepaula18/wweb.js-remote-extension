@@ -57,6 +57,8 @@ export class AwsS3Store implements Store {
   async delete(options: { session: string }): Promise<Promise<any> | any> {
     const remoteFileName = `${options.session}.zip`;
 
+    await this.createBucketWithNotExists(this.bucketName);
+
     await this.deleteRemoteFile({
       bucket: this.bucketName,
       filename: remoteFileName,
@@ -97,8 +99,13 @@ export class AwsS3Store implements Store {
 
       await this.copyRemoteFile({
         bucket: this.bucketName,
-        originFilename: newRemoteFileName,
+        originFilename: `/${this.bucketName}/${newRemoteFileName}`,
         destinationFilename: actualRemoteFileName,
+      });
+
+      await this.deleteRemoteFile({
+        bucket: this.bucketName,
+        filename: newRemoteFileName,
       });
     } else {
       await this.createRemoteFile({
@@ -249,11 +256,5 @@ export class AwsS3Store implements Store {
 
     const command = new CopyObjectCommand(input);
     await this.s3Client.send(command);
-  }
-
-  private consoleLog(message: string, params: object[]) {
-    if (this.enableDebugLog) {
-      console.debug(message, params);
-    }
   }
 }

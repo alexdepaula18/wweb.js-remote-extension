@@ -7,6 +7,7 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  NoSuchKey,
   NotFound,
   PutObjectCommand,
   S3Client,
@@ -95,7 +96,7 @@ describe("AwsS3Store functions", () => {
       expect(s3ClientMock).toHaveReceivedCommandTimes(HeadObjectCommand, 1);
 
       expect(s3ClientMock).toHaveReceivedCommand(DeleteObjectCommand);
-      expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 2);
 
       expect(s3ClientMock).toHaveReceivedCommand(CopyObjectCommand);
       expect(s3ClientMock).toHaveReceivedCommandTimes(CopyObjectCommand, 1);
@@ -126,6 +127,56 @@ describe("AwsS3Store functions", () => {
 
       expect(s3ClientMock).toHaveReceivedCommand(PutObjectCommand);
       expect(s3ClientMock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
+    });
+  });
+
+  describe("Bucket executions", () => {
+    beforeEach(() => {
+      s3ClientMock.reset();
+    });
+
+    test("Bucket NotFound", async () => {
+      const store = new AwsS3Store({ s3Client: s3Client });
+
+      s3ClientMock.on(HeadBucketCommand).callsFake((input) => {
+        throw new NotFound({ $metadata: {}, message: "" });
+      });
+      s3ClientMock.on(CreateBucketCommand).resolves({});
+
+      s3ClientMock.on(DeleteObjectCommand).resolves({});
+
+      await store.delete({ session: "RemoteAuth-xyz" });
+
+      expect(s3ClientMock).toHaveReceivedCommand(HeadBucketCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(HeadBucketCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(CreateBucketCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(CreateBucketCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(DeleteObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
+    });
+
+    test("Bucket NoSuchKey", async () => {
+      const store = new AwsS3Store({ s3Client: s3Client });
+
+      s3ClientMock.on(HeadBucketCommand).callsFake((input) => {
+        throw new NoSuchKey({ $metadata: {}, message: "" });
+      });
+      s3ClientMock.on(CreateBucketCommand).resolves({});
+
+      s3ClientMock.on(DeleteObjectCommand).resolves({});
+
+      await store.delete({ session: "RemoteAuth-xyz" });
+
+      expect(s3ClientMock).toHaveReceivedCommand(HeadBucketCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(HeadBucketCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(CreateBucketCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(CreateBucketCommand, 1);
+
+      expect(s3ClientMock).toHaveReceivedCommand(DeleteObjectCommand);
+      expect(s3ClientMock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
     });
   });
 });
